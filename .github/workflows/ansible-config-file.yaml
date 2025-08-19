@@ -1,0 +1,51 @@
+name:  Configuration ansible.cfg 
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-ansible-cfg:
+    runs-on: [ ansible-master ]
+
+    steps:
+
+
+      - name: Generate ansible.cfg
+        run: |
+          sudo -u revin bash -c 'cat > /home/revin/ansible/ansible.cfg' << 'EOF'
+          [defaults]
+          inventory      = /home/revin/ansible/inventory.yaml
+          roles_path    = /home/revin/ansible/roles
+          host_key_checking = False
+          remote_user = revin
+          private_key_file = /home/revin/.ssh/id_rsa
+          log_path = /home/revin/ansible/ansible.log
+          forks = 5
+          gathering = smart
+          fact_caching = jsonfile
+          fact_caching_connection = /home/revin/ansible/facts_cache
+          
+
+          [privilege_escalation]
+          become = True
+          become_method = sudo
+          become_user = root
+          become_ask_pass = False
+
+          [ssh_connection]
+          ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o ConnectTimeout=10
+          control_path = /home/revin/.ssh/id_rsa-%%r@%%h:%%p
+          EOF
+          
+
+      - name: Set proper permissions
+        run: |
+          sudo chown revin:revin /home/revin/ansible/ansible.cfg
+          sudo chmod 644 /home/revin/ansible/ansible.cfg
+
+      - name: Verify configuration
+        run: |
+          echo "Ansible configuration:"
+          sudo -u revin ls -la /home/revin/ansible/ansible.cfg
+          echo -e "\nContents:"
+          sudo -u revin cat /home/revin/ansible/ansible.cfg
