@@ -5,7 +5,7 @@
   - name: using file module
     file:
       path: /home/revin/file2.txt
-      owner: shruti
+      owner: revin
       mode: 644
       state: touch
 
