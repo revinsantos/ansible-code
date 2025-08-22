@@ -1,9 +1,5 @@
 name: ROLES DEPLOY OF NGINX
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
